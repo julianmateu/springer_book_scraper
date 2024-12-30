@@ -8,13 +8,18 @@ URL_PDF = 'https://link.springer.com/content/pdf/{codigo_libro}.pdf'
 BASE_DIR = '.'
 def download_pdfs_from_url(book_url, book_title, book_topic):
     try:
-        r = requests.get(book_url)
-        url_base = r.url
-        codigo_libro = url_base.split('/')[-1]
-        url_pdf = URL_PDF.format(codigo_libro = codigo_libro)
-        pdf_file = requests.get(url_pdf)
+        book_title = book_title.replace('/', '-')
         pdf_file_name = '{base_dir}/{book_topic}/{book_title}.pdf'.format(book_topic=book_topic, book_title=book_title, base_dir=BASE_DIR)
-        open(pdf_file_name, 'wb').write(pdf_file.content)
+        if not os.path.exists(pdf_file_name):
+            print("Downloading: {book_topic} - {book_title}".format(book_topic=book_topic, book_title=book_title))
+            r = requests.get(book_url)
+            url_base = r.url
+            codigo_libro = url_base.split('/')[-1]
+            url_pdf = URL_PDF.format(codigo_libro = codigo_libro)
+            pdf_file = requests.get(url_pdf)
+            open(pdf_file_name, 'wb').write(pdf_file.content)
+        else:
+            print("Exists: {book_topic} - {book_title}".format(book_topic=book_topic, book_title=book_title))
     except:
         print("Error downloading: {book_topic} - {book_title}".format(book_topic=book_topic, book_title=book_title))
 
